@@ -1,0 +1,6 @@
+name,focus,signal,slack,drag,confidence,score,lane
+baseline,schema drift,74,43,16,87,230,ship
+stress,lineage depth,47,41,17,68,152,ship
+edge,partition skew,77,36,26,88,200,ship
+recovery,quality gap,63,25,23,68,150,ship
+stale,schema drift,74,31,31,75,161,ship

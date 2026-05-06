@@ -1,68 +1,40 @@
 # granite-data-quality-hub
 
-`granite-data-quality-hub` explores data engineering in C++. The repository keeps the core rule set compact, then surrounds it with examples that show how the decisions move.
+`granite-data-quality-hub` is a C++ project in data engineering. Its focus is to build a C++ toolkit that studies quality behavior through append-only fixtures, with checkpoint recovery checks and offline replay mode.
 
-## Granite Data Quality Hub Notes
+## Purpose
 
-The quickest review path is the verifier first, then the fixtures, then the operations note. That order makes it easy to see whether the code, data, and explanation still agree.
+I want this repository to be useful as a quick reading exercise: fixtures first, implementation second, verifier last.
 
-## Why This Exists
+## Granite Data Quality Hub Review Notes
 
-The goal is to capture the core behavior in code and make the surrounding assumptions obvious. A reader should be able to run the verifier, open the fixtures, and understand why each decision was made.
+For a quick review, compare `schema drift` with `quality gap` before reading the middle cases.
 
-## Code Tour
+## What Is Covered
 
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-
-## Feature Notes
-
-- Includes extended examples for pipeline state, including `recovery` and `degraded`.
-- Documents quality gates tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-- Adds a repository audit script that checks structure before running the language verifier.
+- `fixtures/domain_review.csv` adds cases for schema drift and lineage depth.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/granite-data-quality-walkthrough.md` walks through the case spread.
+- The C++ code includes a review path for `schema drift` and `quality gap`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
 ## Implementation Notes
 
-The project is organized around a compact model rather than a large framework. Inputs are scored, classified, and checked against golden fixtures. The constants live in code and are mirrored in metadata so documentation drift is easy to catch. The C++ project uses a small library boundary and a compiled assertion harness.
+The implementation keeps the scoring rule plain: reward signal and confidence, preserve slack, penalize drag, then classify the result into a review lane.
 
-## Local Setup
+The C++ implementation avoids hidden state so fixture changes are easy to reason about.
 
-Clone the repository, enter the directory, and run the verifier. No database server, cloud account, or token is required.
-
-## Example Scenarios
-
-The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
-
-## Try It
+## Command
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Audit Path
 
-## Tests
+The same command runs the local verification path. The highest-scoring domain case is `baseline` at 230, which lands in `ship`. The most cautious case is `recovery` at 150, which lands in `ship`.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Limits
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Roadmap
-
-- Add a loader for `examples/extended_cases.csv` and promote selected cases into the language test suite.
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Add one more data engineering fixture that focuses on a malformed or borderline input.
-
-## Boundaries
-
-The fixture set is deliberately small. That keeps the review surface clear, but it also means the model should not be treated as a complete domain simulator.
+No external service is required. A deeper version would add more negative cases and a clearer boundary around invalid input.
